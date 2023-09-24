@@ -72,7 +72,7 @@ export default class FornecedorCTRL {
             resposta.json({
               status: true,
               mensagem: "Fornecedor adicionado com sucesso!",
-              codigo:fornecedor.codigo
+              codigo: fornecedor.codigo,
             });
           })
           .catch((erro) => {
@@ -106,7 +106,7 @@ export default class FornecedorCTRL {
     if (requisicao.method === "PUT" && requisicao.is("application/json")) {
       const dados = requisicao.body;
       const codigo = dados.codigo;
-      const razaoSocial = dados.razaoSocial; //se não for identificado atribui undefined
+      const razaoSocial = dados.razaoSocial; 
       const nomeFantasia = dados.nomeFantasia;
       const endereco = dados.endereco;
       const numero = dados.numero;
@@ -208,7 +208,11 @@ export default class FornecedorCTRL {
       if (codigo) {
         const fornecedor = new Fornecedor(codigo);
         fornecedor
-          .removerDoBancoDados()
+          .removerItensDoBancoDados()
+          .then(() => {
+            // Em seguida, excluir o registro do pedido de compra na tabela pedidocompras
+            return fornecedor.removerDoBancoDados();
+          })
           .then(() => {
             resposta.json({
               status: true,
@@ -246,7 +250,7 @@ export default class FornecedorCTRL {
       const fornecedor = new Fornecedor();
       fornecedor
         .consultar("")
-        .then((listaFornecedores) => {          
+        .then((listaFornecedores) => {
           resposta.json(listaFornecedores);
         })
         .catch((erro) => {

@@ -1,90 +1,71 @@
-import ProdutoDAO from "../Persistencia/ProdutoDAO.js";
-
-export default class Produto{
-
-    #id
-    #descricao
-    #precoCusto
-    #precoVenda
-    #qtdEstoque
-
-    constructor(id=0, descricao="",precoCusto=0,precoVenda=0,qtdEstoque=0)
-    {
-        this.#id = id;
-        this.#descricao = descricao;
-        this.#precoCusto = precoCusto;
-        this.#precoVenda = precoVenda;
-        this.#qtdEstoque = qtdEstoque;
+import ProdutosBD from "../Persistencia/ProdutoBD.js";
+export default class Produtos {
+    #codProduto; //# define que um atributo seja privado
+    #nome;
+    #preco;
+  
+    //método construtor que define as informações necessárias para se criar um cliente
+    constructor(
+      codProduto,
+      nome,
+      preco
+    ) {
+      this.#codProduto = codProduto;
+      this.#nome = nome;
+      this.#preco = preco;
     }
-
-    get id(){
-        return this.#id;
+  
+    get codProduto() {
+      return this.#codProduto;
     }
-    set id(novoID){
-        this.#id = novoID;
+  
+    set codProduto(novoCodProduto) {
+      this.#codProduto = novoCodProduto;
     }
-
-    get descricao(){
-        return this.#descricao;
+  
+    get nome() {
+      return this.#nome;
     }
-    set descricao(novaDesc){
-        this.#descricao = novaDesc;
+  
+    set nome(novoNome) {
+        this.#nome = novoNome;
     }
-
-
-    get precoCusto(){
-        return this.#precoCusto;
+  
+    get preco() {
+      return this.#preco;
     }
-    set precoCusto(novoPrecoCusto){
-        this.#precoCusto = novoPrecoCusto;
+  
+    set preco(novoPreco) {
+      this.#preco = novoPreco;
+    }  
+    //override ou sobrescrita do método toJSON
+    toJSON() {
+      return {
+        codProduto: this.#codProduto,
+        nome: this.#nome,
+        preco: this.#preco,
+      };
     }
-
-    get precoVenda(){
-        return this.#precoVenda;
+  
+    async gravar() {
+      const produtoDAO = new ProdutosBD();
+      await produtoDAO.incluir(this);
     }
-    set precoVenda(novoPrecoVenda){
-        this.#precoVenda = novoPrecoVenda;
+  
+    async atualizar() {
+      const produtoBD = new ProdutosBD();
+      await produtoBD.alterar(this);
     }
-
-    get qtdEstoque(){
-        return this.#qtdEstoque;
+  
+    async removerDoBancoDados() {
+      const produtoBD = new ProdutosBD();
+      await produtoBD.excluir(this);
     }
-    set qtdEstoque(novaQtdEstoque){
-        this.#qtdEstoque = novaQtdEstoque;
+  
+    async consultar() {
+      const produtoBD = new ProdutosBD();
+      const produtos = await produtoBD.consultar();
+      return produtos;
     }
-
-    //override do método toJSON da classe pai (object)
-    toJSON(){
-        return {
-                  "id":this.#id,
-                  "descricao":this.#descricao,
-                  "precoCusto":this.#precoCusto,
-                  "precoVenda":this.#precoVenda,
-                  "qtdEstoque":this.#qtdEstoque
-               }
-    }
-
-    async gravar(){
-        //Data Access Object
-        //Objeto de acesso aos dados
-        const prodDAO = new ProdutoDAO();
-        this.#id = await prodDAO.gravar(this);
-    }
-
-    async atualizar(){
-
-    }
-
-    async excluir(){
-
-    }
-
-    async consultar(){
-
-    }
-
-    async consultarID(){
-
-    }
-
-}
+  }
+  

@@ -5,77 +5,76 @@ import PedidoComprasBD from "../Persistencia/PedidoComprasBD.js";
 
 export default class PedidoCompras {
   #codPedido; //# define que um atributo seja privado
-  #produto;
-  #quantidade;
+  // #codFornecedor; //# define que um atributo seja privado
+  // #razaoSocial;
   #dataCompra;
+  #total;
   #fornecedor;
+  #listaProdutos;
+
 
   //método construtor que define as informações necessárias para se criar um cliente
-  constructor(
-    codPedido,
-    produto,
-    quantidade,
-    dataCompra,
-    fornecedor
-  ) {
+  constructor(codPedido, dataCompra, total, fornecedor, listaProdutos) {
     this.#codPedido = codPedido;
-    this.#produto = produto;
-    this.#quantidade = quantidade;
+    // this.#codFornecedor = codFornecedor;
+    // this.#razaoSocial = razaoSocial;
     this.#dataCompra = dataCompra;
+    this.#total = total;
     this.#fornecedor = fornecedor;
+    this.#listaProdutos = listaProdutos;
   }
 
   get codPedido() {
     return this.#codPedido;
   }
 
-  set codPedido(novocodPedido) {
-    this.#codPedido = novocodPedido;
+  set codPedido(novoCodPedido) {
+    this.#codPedido = novoCodPedido;
   }
 
-  get produto() {
-    return this.#produto;
-  }
-
-  set produto(novoProduto) {
-    if (novoProduto != "")
-      //regra de negócio que impede que clientes existam com nomes vazios
-      this.#produto = novoProduto;
-  }
-
-  get quantidade() {
-    return this.#quantidade;
-  }
-
-  set quantidade(novaQuantidade) {
-    this.#quantidade = novaQuantidade;
-  }
 
   get dataCompra() {
     return this.#dataCompra;
   }
 
-  set dataCompra(novadataCompra) {
-    this.#dataCompra = novadataCompra;
+  set dataCompra(novaDataCompra) {
+    this.#dataCompra = novaDataCompra;
+  }
+  get total(){
+    return this.#total;
+  }
+
+  set total(novoTotal){
+    this.#total = novoTotal;
   }
 
   get fornecedor() {
     return this.#fornecedor;
   }
 
-  set fornecedor(novofornecedor) {
-    this.#fornecedor = novofornecedor;
+  set fornecedor(novoFornecedor) {
+    this.#fornecedor = novoFornecedor;
   }
+
+  get listaProdutos() {
+    return this.#listaProdutos;
+  }
+
+  set listaProdutos(novoListaProdutos) {
+    this.#listaProdutos = novoListaProdutos;
+  }
+
+
 
 
   //override ou sobrescrita do método toJSON
   toJSON() {
     return {
       codPedido: this.#codPedido,
-      produto: this.#produto,
-      quantidade: this.#quantidade,
       dataCompra: this.#dataCompra,
+      total:this.#total,
       fornecedor: this.#fornecedor,
+      listaProdutos: this.#listaProdutos
     };
   }
 
@@ -98,5 +97,9 @@ export default class PedidoCompras {
     const pedidoCompraBD = new PedidoComprasBD();
     const pedidoCompras = await pedidoCompraBD.consultar();
     return pedidoCompras;
+  }
+  async removerItensDoBancoDados(){
+    const pedidoCompraBD = new PedidoComprasBD();
+    await pedidoCompraBD.excluirPedidoProduto(this.#codPedido);
   }
 }

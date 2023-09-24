@@ -8,15 +8,11 @@ import PedidoComprasCTRL from '../Controle/pedidoComprasCTRL.js';
 
 const rotaPedidoCompra = new Router();
 const controladorPedidoCompra = new PedidoComprasCTRL();
-//http://dominio:porta/pedidocompras
-//requisição e resposta são parâmetros passados automaticamente
-// para os métodos da camada de controle
 
-//De forma explícita conseguimos enxergar a interface da API
 rotaPedidoCompra.get('/',controladorPedidoCompra.consultar)
-// .get('/:cnpj',controladorPedidoCompra.consultarCNPJ)
+
 .post('/',controladorPedidoCompra.gravar)
-// .put('/',controladorPedidoCompra.atualizar)
-// .delete('/',controladorPedidoCompra.excluir);
+.delete('/',controladorPedidoCompra.excluir);
+
 
 export default rotaPedidoCompra;

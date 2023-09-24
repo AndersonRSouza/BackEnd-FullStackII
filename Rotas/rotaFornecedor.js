@@ -2,7 +2,7 @@
 //precisarão ser traduzidas em requisições internas da nossa
 //aplicação para que ela possa dar a resposta adequada.
 import { Router } from 'express';
-import FornecedorCTRL from '../Controle/fornecedorCTRL.js'
+import FornecedorCTRL from '../Controle/fornecedorCTRL.js';
 // import FornecedorCTRL from '../Controle/fornecedorCTRL.js';
 // Router permite a criação de micro aplicações http
 

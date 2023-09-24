@@ -1,4 +1,61 @@
 CREATE TABLE `fornecedor` (
+  `codigo` int(5) NOT NULL,
+  `razaoSocial` varchar(100) NOT NULL,
+  `nomeFantasia` varchar(100) NOT NULL,
+  `endereco` varchar(65) NOT NULL,
+  `numero` varchar(5) NOT NULL,
+  `complemento` varchar(20) NOT NULL,
+  `bairro` varchar(30) NOT NULL,
+  `cidade` varchar(35) NOT NULL,
+  `uf` varchar(3) NOT NULL,
+  `cep` varchar(10) NOT NULL,
+  `pessoa` varchar(15) NOT NULL,
+  `cnpj` varchar(18) NOT NULL,
+  `estadual` varchar(12) NOT NULL,
+  `municipal` varchar(12) NOT NULL,
+  `email` varchar(40) NOT NULL,
+  `celular` varchar(18) NOT NULL,
+  `telefone` varchar(18) NOT NULL,
+  `contato` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `pedidocompras` (
+  `codPedido` int(11) NOT NULL,
+  `produto` varchar(50) DEFAULT NULL,
+  `quantidade` int(11) DEFAULT NULL,
+  `dataCompra` varchar(15) DEFAULT NULL,
+  `codFornecedor` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `fornecedor`
+  ADD PRIMARY KEY (`codigo`);
+
+
+ALTER TABLE `pedidocompras`
+  ADD PRIMARY KEY (`codPedido`),
+  ADD KEY `codFornecedor` (`codFornecedor`);
+
+
+ALTER TABLE `fornecedor`
+  MODIFY `codigo` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+
+ALTER TABLE `pedidocompras`
+  MODIFY `codPedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+
+ALTER TABLE `pedidocompras`
+  ADD CONSTRAINT `pedidocompras_ibfk_1` FOREIGN KEY (`codFornecedor`) REFERENCES `fornecedor` (`codigo`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+
+CREATE TABLE `fornecedor` (
   `codigo` int(5) NOT NULL PRIMARY KEY,
   `razaoSocial` varchar(100) NOT NULL,
   `nomeFantasia` varchar(100) NOT NULL,

@@ -1,4 +1,5 @@
 import FornecedorBD from "../Persistencia/FornecedorBD.js";
+// import FornecedorBD from "../Persistencia/FornecedorBD.js";
 // import ClienteBD from '../Persistencia/ClienteBD.js';
 
 export default class Fornecedor {
@@ -75,10 +76,12 @@ export default class Fornecedor {
   }
 
   set razaoSocial(novoRazaoSocial) {
-    if (novoRazaoSocial != "")
-      //regra de negócio que impede que clientes existam com nomes vazios
+    if (typeof novoRazaoSocial === 'string')
       this.#razaoSocial = novoRazaoSocial;
+    else
+      throw new Error("A razão social deve ser uma string válida.");
   }
+  
 
   get nomeFantasia() {
     return this.#nomeFantasia;
@@ -242,6 +245,11 @@ export default class Fornecedor {
   async removerDoBancoDados() {
     const fornecedorBD = new FornecedorBD();
     await fornecedorBD.excluir(this);
+  }
+
+  async removerItensDoBancoDados() {
+    const fornecedorBD = new FornecedorBD();
+    await fornecedorBD.excluirFornecedor(this.#codigo);
   }
 
   async consultar(termo) {

@@ -11,27 +11,31 @@ export default class PedidoComprasCTRL {
     //resposta.headers('Content-Type','application/json');
     //no cabeçalho da requisição a propriedade Content-Type: application/json
     if (requisicao.method === "POST" && requisicao.is("application/json")) {
-      const dados = requisicao.body;
-      const produto = dados.produto; //se não for identificado atribui undefined
-      const quantidade = dados.quantidade;
+      const dados = requisicao.body; //se não for identificado atribui undefined
       const dataCompra = dados.dataCompra;
       const fornecedor = dados.fornecedor;
+      const listaProdutos = dados.produtos;     
       if (
-        produto &&
-        quantidade &&
         dataCompra &&
-        fornecedor
+        fornecedor &&
+        listaProdutos
       ) {
+        console.log("passou pelo if")
+        console.log("dataCompra", dataCompra)
+        console.log("fornecedor", fornecedor)
+        console.log("listaProd", listaProdutos)
         const pedidoCompras = new PedidoCompras(
           0,
-          produto,
-          quantidade,
           dataCompra,
-          fornecedor
+          0,
+          fornecedor,
+          listaProdutos
         );
+        console.log("pedidoCOmpras novo")
         pedidoCompras
           .gravar()
           .then(() => {
+            console.log("sucesso")
             resposta.json({
               status: true,
               mensagem: "Pedido Compra adicionado com sucesso!",
@@ -39,6 +43,7 @@ export default class PedidoComprasCTRL {
             });
           })
           .catch((erro) => {
+            console.log("erro", erro)
             //funções de callback
             resposta.json({
               status: false,
@@ -69,21 +74,15 @@ export default class PedidoComprasCTRL {
     if (requisicao.method === "PUT" && requisicao.is("application/json")) {
       const dados = requisicao.body;
       const codPedido = dados.codPedido;
-      const produto = dados.produto; //se não for identificado atribui undefined
-      const quantidade = dados.quantidade;
       const dataCompra = dados.dataCompra;
       const codFornecedor = dados.codFornecedor;
       if (
         codPedido &&
-        produto &&
-        quantidade &&
         dataCompra &&
         codFornecedor
       ) {
         const pedidoCompra = new PedidoCompras(
           codPedido,
-          produto,
-          quantidade,
           dataCompra,
           codFornecedor
         );
@@ -124,15 +123,22 @@ export default class PedidoComprasCTRL {
   // o cpf dele for informado por meio de um objeto json
   excluir(requisicao, resposta) {
     resposta.type("application/json");
-    //resposta.headers('Content-Type','application/json');
-    //no cabeçalho da requisição a propriedade Content-Type: application/json
+    // console.log("exclui função", requisicao)
+  
+    console.log("requisicao", requisicao.body)
     if (requisicao.method === "DELETE" && requisicao.is("application/json")) {
       const dados = requisicao.body;
       const codPedido = dados.codPedido;
+  
       if (codPedido) {
         const pedidoCompra = new PedidoCompras(codPedido);
-        pedidoCompra
-          .removerDoBancoDados()
+  
+        // Excluir os registros na tabela Pedido_Produtos relacionados ao pedido de compra
+        pedidoCompra.removerItensDoBancoDados()
+          .then(() => {
+            // Em seguida, excluir o registro do pedido de compra na tabela pedidocompras
+            return pedidoCompra.removerDoBancoDados();
+          })
           .then(() => {
             resposta.json({
               status: true,
@@ -140,29 +146,25 @@ export default class PedidoComprasCTRL {
             });
           })
           .catch((erro) => {
-            //funções de callback
             resposta.json({
               status: false,
-              mensagem:
-                "Não foi possível excluir o pedidocompra: " + erro.message,
+              mensagem: "Não foi possível excluir o pedidocompra: " + erro.message,
             });
           });
       } else {
-        //Faltam dados para o pedidocompra
         resposta.json({
           status: false,
-          mensagem:
-            "Informe o cpf do pedidocompra. Verifique a documentação da API.",
+          mensagem: "Informe o cpf do pedidocompra. Verifique a documentação da API.",
         });
       }
-    } //requisição não é PUT ou não possui dados no formato json
-    else {
+    } else {
       resposta.json({
         status: false,
         mensagem: "Método não permitido. Verifique a documentação da API.",
       });
     }
   }
+  
 
   consultar(requisicao, resposta) {
     resposta.type("application/JSON");
@@ -176,7 +178,7 @@ export default class PedidoComprasCTRL {
         .catch((erro) => {
           resposta.json({
             status: "false",
-            mensagem: "Falha ao obter pedidocompraes: " + erro.message,
+            mensagem: "Falha ao obter pedido compras: " + erro.message,
           });
         });
     } else {
