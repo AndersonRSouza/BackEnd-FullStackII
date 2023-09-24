@@ -242,14 +242,9 @@ export default class Fornecedor {
     await fornecedorBD.alterar(this);
   }
 
-  async removerDoBancoDados() {
-    const fornecedorBD = new FornecedorBD();
-    await fornecedorBD.excluir(this);
-  }
-
   async removerItensDoBancoDados() {
     const fornecedorBD = new FornecedorBD();
-    await fornecedorBD.excluirFornecedor(this.#codigo);
+    await fornecedorBD.excluir(this);
   }
 
   async consultar(termo) {

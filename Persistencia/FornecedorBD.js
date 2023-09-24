@@ -9,6 +9,7 @@ export default class FornecedorBD {
         "INSERT INTO fornecedor(razaoSocial,nomeFantasia,endereco,numero, \
                 complemento,bairro,cidade,uf,cep,pessoa,cnpj,estadual,municipal,email,celular,telefone,contato) \
                                            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                                           console.log("Consulta SQL: ", sql);
       const valores = [
         fornecedor.razaoSocial,
         fornecedor.nomeFantasia,
@@ -30,6 +31,7 @@ export default class FornecedorBD {
       ];
       const [result] = await conexao.query(sql, valores);
       fornecedor.codigo = result.insertCodigo;
+      console.log("Valores: ", valores);
     }
   }
 
@@ -39,14 +41,12 @@ export default class FornecedorBD {
       const conexao = await conectar();
       conexao.beginTransaction();
       const sql =
-        "UPDATE fornecedor SET codigo=?,razaoSocial=?,nomeFantasia=?,endereco=?,numero=?, \
+        "UPDATE fornecedor SET razaoSocial=?,nomeFantasia=?,endereco=?,numero=?, \
             complemento=?,bairro=?,cidade=?,uf=?,cep=?,pessoa=?,cnpj=?,estadual=?,municipal=?,email=?,celular=?,telefone=?,contato=? \
                        WHERE codigo=?";
       console.log("Consulta SQL: ", sql);
-      const codigo = fornecedor.codigo.toString(); // Converter para string
       const valores = [
-        codigo, // Passar como string
-        fornecedor.razaoSocial,
+        fornecedor.razaoSocial, 
         fornecedor.nomeFantasia,
         fornecedor.endereco,
         fornecedor.numero,
@@ -63,6 +63,7 @@ export default class FornecedorBD {
         fornecedor.celular,
         fornecedor.telefone,
         fornecedor.contato,
+        fornecedor.codigo,
       ];
       // const valores = [
       //   fornecedor.codigo,
@@ -88,15 +89,18 @@ export default class FornecedorBD {
       console.log("Valores: ", valores);
       await conexao.query(sql, valores);
       conexao.commit();
+      console.log("esta fazendo commit", conexao)
     }
-    console.log("esta fazendo commit", conexao)
   }
 
   async excluir(fornecedor) {
+    console.log("Chamando o método excluir...");
     if (fornecedor instanceof Fornecedor) {
       const conexao = await conectar();
       const sql = "DELETE FROM fornecedor WHERE codigo=?";
-      const valores = [codigo];
+      console.log("Consulta SQL: ", sql);
+      const valores = [fornecedor.codigo];
+      console.log("Valores: ", valores);
       await conexao.query(sql, valores);
       conexao.commit();
     }
