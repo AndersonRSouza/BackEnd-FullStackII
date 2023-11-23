@@ -7,6 +7,14 @@ import rotaCamareira from './Rotas/rotaCamareira.js';
 import rotaPedidoCompra from './Rotas/rotaPedidoCompras.js';
 import rotaProduto from './Rotas/rotaProduto.js';
 import rotaPedidoProduto from './Rotas/rotaPedidoProduto.js';
+import rotaHospede from './Rotas/rotaHospede.js';
+import rotaAcomodacao from './Rotas/rotaAcomodacao.js';
+import rotaServico from './Rotas/rotaServico.js';
+import rotaPerfil from './Rotas/rotaPerfil.js';
+import rotaLogin from './Rotas/rotaLogin.js';
+import rotaUsuario from './Rotas/rotaUsuario.js';
+
+
 
 const porta=4000;
 const hostname='localhost';
@@ -18,9 +26,15 @@ app.use(cors({origin:"*"}));
 
 
 app.use(express.json());
-app.use('/pedidocompras', rotaPedidoCompra)
+app.use('/login', rotaLogin);
+app.use('/perfil', rotaPerfil);
+app.use('/usuario', rotaUsuario)
+app.use('/pedidocompras', rotaPedidoCompra);
 app.use('/clientes', rotaCliente);
 app.use('/fornecedor', rotaFornecedor);
+app.use('/hospede', rotaHospede);
+app.use('/acomodacao', rotaAcomodacao);
+app.use('/servico', rotaServico);
 app.use('/camareiras', rotaCamareira);
 app.use('/produto', rotaProduto);
 app.use('/pedidoproduto', rotaPedidoProduto);
