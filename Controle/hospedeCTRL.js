@@ -45,7 +45,7 @@ export default class HospedeCTRL {
             resposta.json({
               status: true,
               mensagem: "Hóspede adicionado com sucesso!",
-              codigo: hospede.codigo,
+              cod_hosp: hospede.cod_hosp,
             });
           })
           .catch((erro) => {
@@ -74,7 +74,7 @@ export default class HospedeCTRL {
 
     if (requisicao.method === "PUT" && requisicao.is("application/json")) {
       const dados = requisicao.body;
-      const codigo = dados.codigo;
+      const cod_hosp = dados.cod_hosp;
       const nome = dados.nome;
       const cpf = dados.cpf;
       const endereco = dados.endereco;
@@ -86,7 +86,7 @@ export default class HospedeCTRL {
       const cep = dados.cep;
 
       if (
-        codigo &&
+        cod_hosp &&
         nome &&
         cpf &&
         endereco &&
@@ -98,7 +98,7 @@ export default class HospedeCTRL {
         cep
       ) {
         const hospede = new Hospede(
-          codigo,
+          cod_hosp,
           nome,
           cpf,
           endereco,
@@ -144,10 +144,10 @@ export default class HospedeCTRL {
 
     if (requisicao.method === "DELETE" && requisicao.is("application/json")) {
       const dados = requisicao.body;
-      const codigo = dados.codigo;
+      const cod_hosp = dados.cod_hosp;
 
-      if (codigo) {
-        const hospede = new Hospede(codigo);
+      if (cod_hosp) {
+        const hospede = new Hospede(cod_hosp);
         hospede
           .removerItensDoBancoDados()
           .then(() => {

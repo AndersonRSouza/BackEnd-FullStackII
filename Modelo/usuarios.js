@@ -1,171 +1,107 @@
-import conectar from './Conexao.js';
+import UsuarioBD from "../Persistencia/UsuarioBD.js";
 
-class UsuarioModel {
+export default class Usuario {
+  #codUsuario;
+  #nome;
+  #perfil;
+  #datacadastro;
+  #senha;
 
-    #id;
-    #nome;
-    #email;
-    #perfilId;
-    #ativo;
-    #senha;
-    #dataCadastro
+  constructor(codUsuario, nome, perfil, datacadastro, senha) {
+    this.#codUsuario = codUsuario;
+    this.#nome = nome;
+    this.#perfil = perfil;
+    this.#datacadastro = datacadastro;
+    this.#senha = senha;
+  }
 
-    get senha() {
-        return this.#senha;
-    }
-    set senha(senha){
-        this.#senha = senha;
-    }
+  get codUsuario() {
+    return this.#codUsuario;
+  }
 
-    get id(){
-        return this.#id;
-    }
+  set codUsuario(novoCodUsuario) {
+    if (novoCodUsuario !== "") this.#codUsuario = novoCodUsuario;
+  }
 
-    set id(id) {
-        this.#id = id;
-    }
+  get nome() {
+    return this.#nome;
+  }
 
-    get nome(){
-        return this.#nome;
-    }
-    
-    set nome(nome) {
-        this.#nome = nome;
-    }
+  set nome(novoNome) {
+    this.#nome = novoNome;
+  }
 
-    get email(){
-        return this.#email;
-    }
-    
-    set email(email) {
-        this.#email = email;
-    }
+  get perfil() {
+    return this.#perfil;
+  }
 
-    get perfilId(){
-        return this.#perfilId;
-    }
-    
-    set perfilId(perfilId) {
-        this.#perfilId = perfilId;
-    }
+  set perfil(novoPerfil) {
+    this.#perfil = novoPerfil;
+  }
 
-    get ativo(){
-        return this.#ativo;
-    }
-    
-    set ativo(ativo) {
-        this.#ativo = ativo;
-    }
+  get datacadastro() {
+    return this.#datacadastro;
+  }
 
-    get dataCadastro(){
-        return this.#dataCadastro;
-    }
-    
-    set dataCadastro(dataCadastro) {
-        this.#dataCadastro = dataCadastro;
-    }
+  set datacadastro(novaDataCadastro) {
+    this.#datacadastro = novaDataCadastro;
+  }
 
-    constructor(id, nome, email, perfilId, ativo, dataCadastro, senha){
-        this.#id = id;
-        this.#nome = nome;
-        this.#email = email;
-        this.#perfilId = perfilId;
-        this.#ativo = ativo;
-        this.#dataCadastro = dataCadastro;
-        this.#senha = senha;
-    }
+  get senha() {
+    return this.#senha;
+  }
 
-    toJSON() {
-        return {
-            "id": this.#id,
-            "nome": this.#nome,
-            "email": this.#email,
-            "perfilId": this.#perfilId,
-            "senha": this.#senha,
-            "ativo": this.#ativo
-        }
-    }
+  set senha(novaSenha) {
+    this.#senha = novaSenha;
+  }
 
-    async gravar(){
-        if(this.#id == 0)//comando insert
-        { 
-            let sql = "insert into tb_usuarios (usu_nome, usu_email, usu_ativo, perfil_id, usu_datacadastro, usu_senha) values (?, ?, ?, ?, now(), ?)"
+  // Sobrescrita do método toJSON
+  toJSON() {
+    return {
+      codUsuario: this.#codUsuario,
+      nome: this.#nome,
+      perfil: this.#perfil,
+      datacadastro: this.#datacadastro,
+      senha: this.#senha,
+    };
+  }
 
-            let valores = [this.#nome, this.#email, this.#ativo, this.#perfilId, this.#senha]
+  async gravar() {
+    const usuarioDAO = new UsuarioBD();
+    await usuarioDAO.incluir(this);
+  }
 
-            let ok = await conectar.ExecutaComandoNonQuery(sql, valores);
+  async atualizar() {
+    const usuarioBD = new UsuarioBD();
+    await usuarioBD.alterar(this);
+  }
 
-            return ok;
-        }
-        else //comando update
-        { 
-            let sql = "update tb_usuarios set usu_nome = ?, usu_email = ?, usu_ativo = ?, perfil_id = ?, usu_senha = ? where usu_id = ?"
+  async removerDoBancoDados() {
+    const usuarioBD = new UsuarioBD();
+    await usuarioBD.excluir(this);
+  }
 
-            let valores = [this.#nome, this.#email, this.#ativo, this.#perfilId, this.#senha, this.#id]
+  async consultar(termo) {
+    const usuarioBD = new UsuarioBD();
+    const usuarios = await usuarioBD.consultar(termo);
+    return usuarios;
+  }
 
-            let ok = await conectar.ExecutaComandoNonQuery(sql, valores);
+  async consultarCodigo(codigo) {
+    const usuarioBD = new UsuarioBD();
+    const usuarios = await usuarioBD.consultarCodigo(codigo);
+    return usuarios;
+  }
+  static async consultarPorUsername(username) {
+    const usuarioBD = new UsuarioBD();
+    const usuarios = await usuarioBD.consultarPorUsername(username);
 
-            return ok;
-        }
+    // Se houver usuários correspondentes, retorne o primeiro (assumindo que o username é único)
+    if (usuarios.length > 0) {
+      const { codUsuario, nome, perfil, datacadastro, senha } = usuarios[0];
+      return new Usuario(codUsuario, nome, perfil, datacadastro, senha);
     }
 
-    async obter(id){
-        let sql = "select * from tb_usuarios where usu_id = ?";
-        let valores = [id];
-
-        let rows = await conectar.ExecutaComando(sql, valores);
-
-        if(rows.length > 0) {
-            let usuario = new UsuarioModel(rows[0]["usu_id"], rows[0]["usu_nome"], rows[0]["usu_email"], rows[0]["perfil_id"], rows[0]["usu_ativo"], rows[0]["usu_datacadastro"], rows[0]["usu_senha"]);
-
-            return usuario;
-        }
-
-        return null
-    }
-
-    async obterTodos() {
-
-        let sql  = "select * from tb_usuarios";
-
-        let rows = await conectar.ExecutaComando(sql);
-        let lista = [];
-
-        for(let i = 0; i<rows.length; i++){
-            lista.push(new UsuarioModel(rows[i]["usu_id"],
-            rows[i]["usu_nome"], rows[i]["usu_email"], rows[i]["perfil_id"], rows[i]["usu_ativo"], rows[i]["usu_datacadastro"]))
-        }
-
-        return lista;
-    }
-
-    async excluir(id) {
-
-        let sql = "delete from tb_usuarios where usu_id = ?"
-
-        let valores = [id];
-
-        let ok = await conectar.ExecutaComandoNonQuery(sql, valores);
-
-        return ok;
-    }
-
-    async autenticar(email, senha) {
-
-        let sql = "select * from tb_usuarios where usu_email = ? and usu_senha = ? and usu_ativo = 'S'";
-
-        let valores = [email, senha];
-
-        let rows = await conectar.ExecutaComando(sql, valores);
-
-        if(rows.length > 0) {
-            return new UsuarioModel(rows[0]["usu_id"],
-            rows[0]["usu_nome"], rows[0]["usu_email"], rows[0]["perfil_id"], rows[0]["usu_ativo"], rows[0]["usu_datacadastro"])
-        }
-
-        return null;
-    }
-
+    return null; // Retorne null se nenhum usuário correspondente for encontrado
+  }
 }
-
-module.exports = UsuarioModel;

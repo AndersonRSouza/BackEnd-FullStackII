@@ -3,7 +3,7 @@ import HospedeBD from "../Persistencia/HospedeBD.js";
 // import ClienteBD from '../Persistencia/ClienteBD.js';
 
 export default class Hospede {
-    #codigo; //# define que um atributo seja privado
+    #cod_hosp; //# define que um atributo seja privado
     #nome;
     #cpf;
     #endereco;
@@ -16,7 +16,7 @@ export default class Hospede {
 
   //método construtor que define as informações necessárias para se criar um cliente
   constructor(
-    codigo,
+    cod_hosp,
     nome,
     cpf,
     endereco,
@@ -28,7 +28,7 @@ export default class Hospede {
     cep
     
   ) {
-    this.#codigo = codigo;
+    this.#cod_hosp = cod_hosp;
     this.#nome = nome;
     this.#cpf = cpf;
     this.#endereco = endereco;
@@ -40,12 +40,12 @@ export default class Hospede {
     this.#cep = cep;
   }
 
-  get codigo() {
-    return this.#codigo;
+  get cod_hosp() {
+    return this.#cod_hosp;
   }
 
-  set codigo(novoCodigo) {
-    this.#codigo = novoCodigo;
+  set cod_hosp(novoCod_hosp) {
+    this.#cod_hosp = novoCod_hosp;
   }
 
   get nome() {
@@ -126,7 +126,7 @@ export default class Hospede {
   //override ou sobrescrita do método toJSON
   toJSON() {
     return {
-        codigo: this.#codigo,
+        cod_hosp: this.#cod_hosp,
         nome: this.#nome,
         cpf: this.#cpf,
         endereco: this.#endereco,

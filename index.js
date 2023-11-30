@@ -10,9 +10,15 @@ import rotaPedidoProduto from './Rotas/rotaPedidoProduto.js';
 import rotaHospede from './Rotas/rotaHospede.js';
 import rotaAcomodacao from './Rotas/rotaAcomodacao.js';
 import rotaServico from './Rotas/rotaServico.js';
-import rotaPerfil from './Rotas/rotaPerfil.js';
-import rotaLogin from './Rotas/rotaLogin.js';
 import rotaUsuario from './Rotas/rotaUsuario.js';
+import rotaPerfil from './Rotas/rotaPerfil.js';
+import rotaConsumoProduto from './Rotas/rotaConsumoProduto.js';
+import rotaConsumoProdutoPedido from './Rotas/rotaConsumoProdutoPedido.js';
+import rotaConsumoServico from './Rotas/rotaConsumoServico.js';
+import rotaConsumoServicoPedido from './Rotas/rotaConsumoServicoPedido.js';
+// import rotaPerfil from './Rotas/rotaPerfil.js';
+// import rotaLogin from './Rotas/rotaLogin.js';
+// import rotaUsuario from './Rotas/rotaUsuario.js';
 
 
 
@@ -26,9 +32,12 @@ app.use(cors({origin:"*"}));
 
 
 app.use(express.json());
-app.use('/login', rotaLogin);
+// app.use('/login', rotaLogin);
+// app.use('/perfil', rotaPerfil);
+// app.use('/usuario', rotaUsuario)
+app.use('/autenticar', rotaUsuario)
 app.use('/perfil', rotaPerfil);
-app.use('/usuario', rotaUsuario)
+app.use('/usuarios', rotaUsuario);
 app.use('/pedidocompras', rotaPedidoCompra);
 app.use('/clientes', rotaCliente);
 app.use('/fornecedor', rotaFornecedor);
@@ -38,6 +47,10 @@ app.use('/servico', rotaServico);
 app.use('/camareiras', rotaCamareira);
 app.use('/produto', rotaProduto);
 app.use('/pedidoproduto', rotaPedidoProduto);
+app.use('/consumoproduto', rotaConsumoProduto);
+app.use('/consumoprodutopedido', rotaConsumoProdutoPedido);
+app.use('/consumoservico', rotaConsumoServico);
+app.use('/consumoservicopedido', rotaConsumoServicoPedido);
 
 
 app.listen(porta,hostname, ()=>{

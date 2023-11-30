@@ -1,52 +1,62 @@
-import conectar from './Conexao.js';
+import PerfisBD from "../Persistencia/perfilBD.js";
 
-class PerfilModel {
+export default class Perfis {
+  #perfil_id;
+  #descricao;
 
-    #perfilId;
-    #perfilDescricao;
+  constructor(perfil_id, descricao) {
+    this.#perfil_id = perfil_id;
+    this.#descricao = descricao;
+  }
 
-    get perfilId() {
-        return this.#perfilId;
-    }
-    set perfilId(perfilId){
-        this.#perfilId = perfilId;
-    }
+  get perfil_id() {
+    return this.#perfil_id;
+  }
 
-    get perfilDescricao() {
-        return this.#perfilDescricao;
-    }
-    set perfilDescricao(perfilDescricao){
-        this.#perfilDescricao = perfilDescricao;
-    }
+  set perfil_id(novoPerfil_id) {
+    if (novoPerfil_id != "") this.#perfil_id = novoPerfil_id;
+  }
 
-    constructor(perfilId, perfilDescricao){
-        this.#perfilId = perfilId;
-        this.#perfilDescricao = perfilDescricao;
-    }
+  get descricao() {
+    return this.#descricao;
+  }
 
-    async listarPerfil() {
+  set descricao(novaDescricao) {
+    this.#descricao = novaDescricao;
+  }
 
-        let lista = [];
-        let sql = "select * from tb_perfil";
+  //override ou sobrescrita do método toJSON
+  toJSON() {
+    return {
+      perfil_id: this.#perfil_id,
+      descricao: this.#descricao,
+    };
+  }
 
-        let rows = await conectar.ExecutaComando(sql);
+  async gravar() {
+    const perfilDAO = new PerfisBD();
+    await perfilDAO.incluir(this);
+  }
 
-        for(let i = 0; i<rows.length; i++){
+  async atualizar() {
+    const perfilBD = new PerfisBD();
+    await perfilBD.alterar(this);
+  }
 
-            let perfil = new PerfilModel(rows[i]["perfil_id"], rows[i]["descricao"]);
+  async removerDoBancoDados() {
+    const perfilBD = new PerfisBD();
+    await perfilBD.excluir(this);
+  }
 
-            lista.push(perfil);
-        }
+  async consultar(termo) {
+    const perfilBD = new PerfisBD();
+    const perfis = await perfilBD.consultar(termo);
+    return perfis;
+  }
 
-        return lista;
-    }
-
-    toJSON() {
-        return {
-            "perfilId": this.#perfilId,
-            "perfilDescricao": this.#perfilDescricao
-        };
-    }
+  async consultarCODIGO(perfil_id) {
+    const perfilBD = new PerfisBD();
+    const perfis = await perfilBD.consultarCODIGO(perfil_id);
+    return perfis;
+  }
 }
-
-module.exports = PerfilModel;

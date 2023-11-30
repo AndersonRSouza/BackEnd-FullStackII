@@ -1,102 +1,199 @@
-import UsuarioModel from '../Modelo/usuarios';
+import Usuario from "../Modelo/usuarios.js";
+import bcrypt from "bcrypt";
 
-class UsuarioController {
+export default class UsuarioCTRL {
+  gravar(requisicao, resposta) {
+    resposta.type("application/json");
+    if (requisicao.method === "POST" && requisicao.is("application/json")) {
+      const dados = requisicao.body;
+      const nome = dados.nome;
+      const perfil = dados.perfil;
+      const datacadastro = dados.datacadastro;
+      const senha = dados.senha;
+      if (nome && perfil && datacadastro && senha) {
+        const usuarios = new Usuario(0, nome, perfil, datacadastro, senha);
+        usuarios
+          .gravar()
+          .then(() => {
+            resposta.json({
+              status: true,
+              mensagem: "Serviço adicionado com sucesso!",
+              codUsuario: usuarios.codUsuario,
+            });
+          })
+          .catch((erro) => {
+            //funções de callback
+            resposta.json({
+              status: false,
+              mensagem: "Não foi possível gravar o  serviço: " + erro.message,
+            });
+          });
+      } else {
+        resposta.json({
+          status: false,
+          mensagem:
+            "Informe todos os dados do consumo de usuario. Verifique a documentação da API.",
+        });
+      }
+    } //requisição não é POST ou não possui dados no formato json
+    else {
+      resposta.json({
+        status: false,
+        mensagem: "Método não permitido. Verifique a documentação da API.",
+      });
+    }
+  }
 
-    async obter(req, res) {
-        if(req.params.id != undefined) {
-            let usuario = new UsuarioModel();
-            usuario = await usuario.obter(req.params.id);
-            if(usuario == null) {
-                res.status(404).json({msg: "Usuário não encontrado!"})
+  atualizar(requisicao, resposta) {
+    resposta.type("application/json");
+    if (requisicao.method === "PUT" && requisicao.is("application/json")) {
+      const dados = requisicao.body;
+      const nome = dados.nome;
+      const perfil = dados.perfil;
+      const datacadastro = dados.datacadastro;
+      const senha = dados.senha;
+
+      if (nome && perfil && datacadastro && senha) {
+        const usuario = new Usuario(0, nome, perfil, datacadastro, senha);
+        usuario
+          .atualizar()
+          .then(() => {
+            resposta.json({
+              status: true,
+              mensagem: " Usuario atualizado com sucesso!",
+            });
+          })
+          .catch((erro) => {
+            //funções de callback
+            resposta.json({
+              status: false,
+              mensagem:
+                "Não foi possível atualizar o consumo de usuario: " +
+                erro.message,
+            });
+          });
+      } else {
+        resposta.json({
+          status: false,
+          mensagem:
+            "Informe todos os dados do consumo de usuario. Verifique a documentação da API.",
+        });
+      }
+    } //requisição não é PUT ou não possui dados no formato json
+    else {
+      resposta.json({
+        status: false,
+        mensagem: "Método não permitido. Verifique a documentação da API.",
+      });
+    }
+  }
+
+  excluir(requisicao, resposta) {
+    resposta.type("application/json");
+
+    if (requisicao.method === "DELETE" && requisicao.is("application/json")) {
+      const dados = requisicao.body;
+      const codUsuario = dados.codUsuario; // Apenas o ID é necessário para excluir
+      if (codUsuario) {
+        const usuario = new Usuario(codUsuario);
+        usuario
+          .removerDoBancoDados()
+          .then(() => {
+            resposta.json({
+              status: true,
+              mensagem: "Usuário excluído com sucesso!",
+            });
+          })
+          .catch((erro) => {
+            resposta.json({
+              status: false,
+              mensagem: "Não foi possível excluir o usuário: " + erro.message,
+            });
+          });
+      } else {
+        resposta.json({
+          status: false,
+          mensagem:
+            "Informe o código do usuário. Verifique a documentação da API.",
+        });
+      }
+    } else {
+      resposta.json({
+        status: false,
+        mensagem: "Método não permitido. Verifique a documentação da API.",
+      });
+    }
+  }
+
+  consultar(requisicao, resposta) {
+    resposta.type("application/JSON");
+    if (requisicao.method === "GET") {
+      const usuario = new Usuario();
+      usuario
+        .consultar("")
+        .then((usuarios) => {
+          resposta.status(200).json(usuarios);
+        })
+        .catch((erro) => {
+          resposta.json({
+            status: false,
+            mensagem: "Falha ao obter consumo de usuários: " + erro.message,
+          });
+        });
+    } else {
+      resposta.json({
+        status: false,
+        mensagem: "Método não permitido. Verifique a documentação da API.",
+      });
+    }
+  }
+  autenticarUsuario(requisicao, resposta) {
+    resposta.type("application/json");
+
+    if (requisicao.method === "POST" && requisicao.is("application/json")) {
+      const dados = requisicao.body;
+      const username = dados.username;
+      const password = dados.password;
+
+      if (username && password) {
+        // Consulte o usuário no banco de dados usando o método do modelo ou DAO
+        Usuario.consultarPorUsername(username)
+          .then((usuario) => {
+            // Verifique se o usuário existe e a senha está correta
+            if (usuario && bcrypt.compareSync(password, usuario.senha)) {
+              // Autenticação bem-sucedida, retorne os detalhes do usuário
+              resposta.json({
+                username: usuario.nome,
+                perfil: usuario.perfil,
+                // ... outros detalhes do usuário que você deseja incluir
+              });
+            } else {
+              // Credenciais inválidas
+              resposta
+                .status(401)
+                .json({ status: false, mensagem: "Credenciais inválidas" });
             }
-            else {
-                res.status(200).json(usuario.toJSON());
-            }
-            
-        }
-        else {
-            res.status(400).json({msg: "Parâmetro inválido"});
-        }
+          })
+          .catch((erro) => {
+            // Lidar com erros de consulta ao banco de dados ou outros erros
+            console.error("Erro ao autenticar usuário:", erro.message);
+            resposta
+              .status(500)
+              .json({ status: false, mensagem: "Erro interno do servidor" });
+          });
+      } else {
+        resposta.json({
+          status: false,
+          mensagem:
+            "Informe o nome de usuário e a senha. Verifique a documentação da API.",
+        });
+      }
+    } else {
+      resposta.json({
+        status: false,
+        mensagem:
+          "Método não permitido ou formato de dados inválido. Verifique a documentação da API.",
+      });
     }
-
-    async listar(req, res) {
-        let usuModel = new UsuarioModel();
-        let lista = await usuModel.obterTodos();
-        let listaRetorno = [];
-
-        for(let i = 0; i<lista.length; i++){
-            listaRetorno.push(lista[i].toJSON())
-        }
-
-        res.status(200).json(listaRetorno);
-    }
-
-    async excluir(req, res) {
-        try{
-            if(req.params.id != null) {
-                let usuarioModel = new UsuarioModel();
-                let ok = await usuarioModel.excluir(req.params.id);
-
-                if(ok) {
-                    res.status(200).json({msg: "Usuário excluído com sucesso!"})
-                }
-                else{
-                    res.status(500).json({msg: "Erro ao excluir usuário"});
-                }
-            }
-            else{
-                res.status(400).json({msg: 'Parâmetro inválido'})
-            }
-        }
-        catch(e){
-            res.status(500).json({msg: e.message})
-        }
-
-    }
-
-    async alterar(req, res){
-        if(Object.keys(req.body).length == 6){
-
-            let usuarioModel = new UsuarioModel();
-
-            usuarioModel.id = req.body.id;
-            usuarioModel.nome = req.body.nome;
-            usuarioModel.ativo = req.body.ativo;
-            usuarioModel.email = req.body.email;
-            usuarioModel.perfilId = req.body.perfilId;           
-            usuarioModel.senha = req.body.senha;
-            let ok = await usuarioModel.gravar()
-            if(ok)
-                res.status(200).json({msg: "Usuário alterado!"})
-            else
-                res.status(500).json({msg: "Erro ao alterar usuário"})
-        }
-        else{
-            res.status(400).json({msg: "Parâmetros inválidos"})
-        }
-    }
-
-    criar(req, res) {
-        if(Object.keys(req.body).length == 5) {
-            let usuarioModel = new UsuarioModel();
-
-            usuarioModel.id = 0;
-            usuarioModel.nome = req.body.nome;
-            usuarioModel.ativo = req.body.ativo;
-            usuarioModel.email = req.body.email;
-            usuarioModel.perfilId = req.body.perfilId;           
-            usuarioModel.senha = req.body.senha;
-            let ok = usuarioModel.gravar()
-            if(ok)
-                res.status(200).json({msg: "Usuário adicionado!"})
-            else
-                res.status(500).json({msg: "Erro ao gravar usuário"})
-        }
-        else{
-            res.status(400).json({msg: "Parâmetros inválidos"})
-        }
-    }
-
+  }
 }
-
-module.exports = UsuarioController;

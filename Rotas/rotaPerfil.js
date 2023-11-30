@@ -1,18 +1,13 @@
-import Autorizacao from '../middlewares/autorizacao';
-import PerfilController from '../Controle/perfilCTRL';
+import { Router } from "express";
+import PerfilCTRL from "../Controle/perfilCTRL.js";
 
 const rotaPerfil = new Router();
+const controladorPerfil = new PerfilCTRL();
 
-let auth = new Autorizacao();
-let ctrl = new PerfilController();
-rotaPerfil.get('/listar', auth.validarToken, 
-(req, res) => {
-    // #swagger.tags = ['Perfil']
-    /* #swagger.security = [{
-        "apiKeyAuth": ['PFSII']
-    }] */
-    ctrl.listar(req, res);
-})
+rotaPerfil.get('/',controladorPerfil.consultar)
+//.get('/:codigo', controladorPerfil.consultarCODIGO)
+.post('/',controladorPerfil.gravar)
+.put('/',controladorPerfil.atualizar)
+.delete('/',controladorPerfil.excluir);
 
-
-module.exports = router;
+export default rotaPerfil;

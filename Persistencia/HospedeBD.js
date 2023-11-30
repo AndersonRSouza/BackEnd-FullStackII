@@ -20,7 +20,7 @@ export default class HospedeBD {
         hospede.cep,
       ];
       const [result] = await conexao.query(sql, valores);
-      hospede.codigo = result.insertCodigo;
+      hospede.cod_hosp = result.insertCodigo;
       console.log("Valores: ", valores);
     }
   }
@@ -31,7 +31,7 @@ export default class HospedeBD {
       const conexao = await conectar();
       conexao.beginTransaction();
       const sql =
-        "UPDATE hospede SET nome=?, cpf=?, endereco=?, rg=?, telefone=?, email=?, datanasc=?, sexo=?, cep=? WHERE codigo=?";
+        "UPDATE hospede SET nome=?, cpf=?, endereco=?, rg=?, telefone=?, email=?, datanasc=?, sexo=?, cep=? WHERE cod_hosp=?";
       console.log("Consulta SQL: ", sql);
       const valores = [
         hospede.nome,
@@ -43,7 +43,7 @@ export default class HospedeBD {
         hospede.datanasc,
         hospede.sexo,
         hospede.cep,
-        hospede.codigo,
+        hospede.cod_hosp,
       ];
       console.log("Valores: ", valores);
       await conexao.query(sql, valores);
@@ -56,9 +56,9 @@ export default class HospedeBD {
     console.log("Chamando o método excluir...");
     if (hospede instanceof Hospede) { 
       const conexao = await conectar();
-      const sql = "DELETE FROM hospede WHERE codigo=?";
+      const sql = "DELETE FROM hospede WHERE cod_hosp=?";
       console.log("Consulta SQL: ", sql);
-      const valores = [hospede.codigo];
+      const valores = [hospede.cod_hosp];
       console.log("Valores: ", valores);
       await conexao.query(sql, valores);
       conexao.commit();
@@ -73,7 +73,7 @@ export default class HospedeBD {
     const listaHospedes = [];
     for (const row of rows) {
       const hospede = new Hospede(
-        row["codigo"],
+        row["cod_hosp"],
         row["nome"],
         row["cpf"],
         row["endereco"],
@@ -97,7 +97,7 @@ export default class HospedeBD {
     const listaHospedes = [];
     for (const row of rows) {
       const hospede = new Hospede(
-        row["codigo"],
+        row["cod_hosp"],
         row["nome"],
         row["cpf"],
         row["endereco"],
