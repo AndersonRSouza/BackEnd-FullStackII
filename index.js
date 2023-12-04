@@ -35,7 +35,7 @@ app.use(express.json());
 // app.use('/login', rotaLogin);
 // app.use('/perfil', rotaPerfil);
 // app.use('/usuario', rotaUsuario)
-app.use('/autenticar', rotaUsuario)
+app.use('/autenticar', rotaUsuario);
 app.use('/perfil', rotaPerfil);
 app.use('/usuarios', rotaUsuario);
 app.use('/pedidocompras', rotaPedidoCompra);
