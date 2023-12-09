@@ -80,7 +80,7 @@ export default class UsuarioBD {
     const sql = 'SELECT * FROM usuario WHERE nome = ?';
     const valores = [username];
     const [rows] = await conexao.query(sql, valores);
-
+  
     return rows;
   }
 }

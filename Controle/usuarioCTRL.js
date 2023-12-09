@@ -148,6 +148,7 @@ export default class UsuarioCTRL {
     }
   }
   autenticarUsuario(requisicao, resposta) {
+    console.log("autenticar Usuario");
     resposta.type("application/json");
 
     if (requisicao.method === "POST" && requisicao.is("application/json")) {
@@ -160,11 +161,13 @@ export default class UsuarioCTRL {
         Usuario.consultarPorUsername(username)
           .then((usuario) => {
             // Verifique se o usuário existe e a senha está correta
-            if (usuario && bcrypt.compareSync(password, usuario.senha)) {
+            // if (usuario && bcrypt.compareSync(password, usuario.senha)) {
+              if (usuario && password == usuario.senha) {
               // Autenticação bem-sucedida, retorne os detalhes do usuário
               resposta.json({
                 username: usuario.nome,
                 perfil: usuario.perfil,
+                
                 // ... outros detalhes do usuário que você deseja incluir
               });
             } else {

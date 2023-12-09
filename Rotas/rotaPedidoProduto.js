@@ -6,9 +6,8 @@ import PedidoProdutosCTRL from '../Controle/pedidoProdutoCTRL.js';
 const rotaPedidoProduto = new Router();
 const controladorPedidoProduto = new PedidoProdutosCTRL();
 
-rotaPedidoProduto.get('/',controladorPedidoProduto.consultar)
-
+rotaPedidoProduto
+.get('/',controladorPedidoProduto.consultar)
 .delete('/',controladorPedidoProduto.excluir)
-
 
 export default rotaPedidoProduto;

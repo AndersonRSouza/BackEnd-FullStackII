@@ -27,16 +27,6 @@ SET time_zone = "+00:00";
 -- Estrutura da tabela `acomodacao`
 --
 
-CREATE TABLE `acomodacao` (
-  `codigo` int(11) NOT NULL,
-  `num_acom` varchar(5) NOT NULL,
-  `capacidade` varchar(10) NOT NULL,
-  `tamanho` varchar(20) NOT NULL,
-  `localizacao` varchar(100) NOT NULL,
-  `descricao` varchar(250) NOT NULL,
-  `valor` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 --
 -- Extraindo dados da tabela `acomodacao`
 --
@@ -413,7 +403,7 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 CREATE TABLE acomodacao (
-  cod_acom INT AUTO_INCREMENT PRIMARY KEY,
+  codigo INT AUTO_INCREMENT PRIMARY KEY,
   num_acom VARCHAR(5) NOT NULL,
   capacidade VARCHAR(10) NOT NULL,
   tamanho VARCHAR(20) NOT NULL,
@@ -515,4 +505,43 @@ ALTER TABLE `consumo_servico_pedido`
 COMMIT;
 
 
- 
+ CREATE TABLE `pedido_acomodacao` (
+  `codigo` int(11) NOT NULL,
+  `codPedido` int(11) NOT NULL,
+  `qtd` int(11) DEFAULT NULL,
+  `valor` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `pedidoreservas` (
+  `codHospede` int(11) NOT NULL,
+  `quantidade` int(11) DEFAULT NULL,
+  `dataReserva` varchar(15) DEFAULT NULL,
+  `codPedido` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `pedidoreservas`
+  ADD PRIMARY KEY (`codPedido`),
+  ADD KEY `codHospede` (`codHospede`);
+
+ALTER TABLE `pedido_acomodacao`
+  ADD PRIMARY KEY (`codPedido`,`codigo`),
+  ADD KEY `codigo` (`codigo`);
+
+
+ALTER TABLE `acomodacao`
+  MODIFY `codigo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+ALTER TABLE `pedidoreservas`
+  MODIFY `codPedido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+
+ALTER TABLE `hospede`
+  MODIFY `cod_hosp` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+ALTER TABLE `pedidoreservas`
+  ADD CONSTRAINT `pedidoreservas_ibfk_1` FOREIGN KEY (`codHospede`) REFERENCES `hospede` (`cod_hosp`);
+
+ALTER TABLE `pedido_acomodacao`
+  ADD CONSTRAINT `pedido_acomodacao_ibfk_1` FOREIGN KEY (`codPedido`) REFERENCES `pedidoreservas` (`codPedido`),
+  ADD CONSTRAINT `pedido_acomodacao_ibfk_2` FOREIGN KEY (`codigo`) REFERENCES `acomodacao` (`codigo`);
