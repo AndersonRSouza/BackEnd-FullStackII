@@ -1,8 +1,8 @@
 import PedidoProdutosBD from "../Persistencia/PedidoProdutosBD.js";
 
 export default class pedidoProdutos {
-    #codPedido; //# define que um atributo seja privado 
-    #codFornecedor; //# define que um atributo seja privado  
+    #codPedido; 
+    #codFornecedor;  
     #razaoSocial;
     #dataCompra;
     
